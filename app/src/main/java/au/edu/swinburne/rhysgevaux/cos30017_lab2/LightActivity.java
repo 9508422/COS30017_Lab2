@@ -20,6 +20,14 @@ public class LightActivity extends AppCompatActivity {
             return false;
         }
     };
+    private final View.OnLongClickListener bulbLongTouchListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            setLightBulb();
+
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +41,8 @@ public class LightActivity extends AppCompatActivity {
         setLightBulb();
 
         ImageView bulbImageView = (ImageView) findViewById(R.id.bulbImageView);
-        bulbImageView.setOnTouchListener(bulbTouchListener);
+        bulbImageView.setOnLongClickListener(bulbLongTouchListener);
+        //bulbImageView.setOnTouchListener(bulbTouchListener);
 
         restoreState(savedInstanceState);
     }
