@@ -1,35 +1,68 @@
 package au.edu.swinburne.rhysgevaux.cos30017_lab2;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 public class LightActivity extends AppCompatActivity {
 
     private boolean lightOn;
+    private final View.OnTouchListener bulbTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            setLightBulb();
+
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_light);
 
-        initialiseUI();
+        initUI(savedInstanceState);
     }
 
-    private void initialiseUI() {
-        initialiseBulbImageView();
-    }
+    private void initUI(Bundle savedInstanceState) {
+        setLightBulb();
 
-    private void initialiseBulbImageView() {
         ImageView bulbImageView = (ImageView) findViewById(R.id.bulbImageView);
-        bulbImageView.setImageDrawable(getResources().getDrawable(R.drawable.off));
-        lightOn = false;
         bulbImageView.setOnTouchListener(bulbTouchListener);
+
+        restoreState(savedInstanceState);
+    }
+
+    private void restoreState(Bundle state) {
+        if (state != null) {
+            lightOn = state.getBoolean("lightOn");
+        }
+    }
+
+    private void setLightBulb() {
+        ImageView bulbImageView = (ImageView) findViewById(R.id.bulbImageView);
+
+        String lightText;
+
+        if (!lightOn) {
+            bulbImageView.setImageDrawable(getResources().getDrawable(R.drawable.on));
+            lightText = "BULB is ON";
+            lightOn = true;
+        } else {
+            bulbImageView.setImageDrawable(getResources().getDrawable(R.drawable.off));
+            lightText = "BULB is OFF";
+            lightOn = false;
+        }
+
+        TextView bulbStatusTextView = (TextView) findViewById(R.id.bulbStatusTextView);
+        if (bulbStatusTextView != null) {
+            bulbStatusTextView.setText(lightText);
+        }
     }
 
     @Override
@@ -54,22 +87,9 @@ public class LightActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private View.OnTouchListener bulbTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            ImageView bulbImageView = (ImageView) findViewById(R.id.bulbImageView);
-
-            if (!lightOn) {
-                bulbImageView.setImageDrawable(getResources().getDrawable(R.drawable.on));
-                lightOn = true;
-                Toast.makeText(getApplicationContext(),"Light on.",Toast.LENGTH_LONG).show();
-            } else {
-                bulbImageView.setImageDrawable(getResources().getDrawable(R.drawable.off));
-                lightOn = false;
-                Toast.makeText(getApplicationContext(),"Light off.",Toast.LENGTH_LONG).show();
-            }
-
-            return false;
-        }
-    };
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("lightOn", lightOn);
+        super.onSaveInstanceState(outState);
+    }
 }
